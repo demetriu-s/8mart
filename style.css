@@ -1,4 +1,12 @@
-/* --- Загальні налаштування --- */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@400;800&display=swap');
+
+:root {
+    --card-bg: rgba(255, 255, 255, 0.98);
+    --primary-pink: #ff4d6d;
+    /* Динамічний розмір картки: на ПК 320px, на мобілках максимум 75% ширини екрана */
+    --card-width: min(320px, 75vw);
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -11,18 +19,17 @@ body {
     width: 100vw;
     overflow: hidden;
     position: relative;
-    /* Вимикаємо зайві відступи для мобілок */
     touch-action: manipulation;
 }
 
-/* --- Фонова декоративна цифра 8 --- */
+/* --- ФОНОВА ВІСІМКА (ФІКСОВАНА) --- */
 .bg-eight {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    /* Використовуємо vmin, щоб вона не розтягувалась по ширині */
-    font-size: 70vmin; 
+    /* vmin гарантує, що цифра не розтягнеться в прямокутник */
+    font-size: 80vmin; 
     font-weight: 900;
     color: rgba(255, 77, 109, 0.03);
     z-index: -1;
@@ -30,109 +37,109 @@ body {
     line-height: 1;
 }
 
-/* --- ГЕОМЕТРИЧНА ВІСІМКА (ФІКСОВАНА ФОРМА) --- */
+/* --- ГОЛОВНА КАРТКА --- */
+.main-card {
+    background: var(--card-bg);
+    width: var(--card-width);
+    padding: clamp(15px, 4vw, 25px);
+    border-radius: clamp(30px, 8vw, 45px);
+    box-shadow: 0 20px 60px rgba(255, 77, 109, 0.2);
+    text-align: center;
+    position: relative;
+    z-index: 1000;
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+}
+
+/* Вісімка з сердечок всередині картки */
 .eight-dynamic {
     position: relative;
     height: 90px;
     width: 60px;
     margin: 0 auto 10px;
-    display: block;
-    /* Центруємо елементи всередині */
-    transform-origin: center;
 }
 
 .heart-dot {
     position: absolute;
     font-size: 10px;
-    color: #ff4d6d;
-    line-height: 1;
-    /* Гарантуємо, що сердечка не "пливуть" */
-    display: inline-block;
+    color: var(--primary-pink);
     animation: heartPulse 1.5s infinite alternate;
 }
 
 @keyframes heartPulse {
-    from { opacity: 0.6; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1.1); }
-}
-
-/* --- ГОЛОВНА КАРТКА (ОПТИМІЗАЦІЯ ПІД МОБІЛКУ) --- */
-.main-card {
-    background: rgba(255, 255, 255, 0.98);
-    /* Використовуємо min(), щоб на дуже вузьких екранах вона ставала ще меншою */
-    width: min(260px, 75vw); 
-    padding: 20px;
-    border-radius: 35px;
-    box-shadow: 0 15px 50px rgba(255, 77, 109, 0.2);
-    text-align: center;
-    position: relative;
-    z-index: 1000;
-    box-sizing: border-box;
-    flex-shrink: 0;
+    from { opacity: 0.5; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1.2); }
 }
 
 .title {
     font-family: 'Caveat', cursive;
-    /* Шрифт теж має трохи зменшуватись */
-    font-size: clamp(18px, 5vw, 22px);
-    color: #ff4d6d;
+    font-size: clamp(20px, 6vw, 28px);
+    color: var(--primary-pink);
     margin: 0;
-    line-height: 1.1;
 }
 
-/* --- Фото-стек --- */
+/* --- ФОТО-СТЕК (ПРАЦЮЄ ВСЮДИ) --- */
 .photo-stack {
     position: relative;
-    /* Зменшуємо висоту для компактності */
-    height: 110px;
-    margin: 15px 0;
+    height: clamp(110px, 30vw, 150px);
+    margin: 20px 0;
     cursor: pointer;
 }
 
 .card-photo {
     position: absolute;
-    width: 75px; 
-    height: 100px;
+    width: 30%; /* Пропорційно до ширини картки */
+    aspect-ratio: 3/4;
     left: 50%;
-    margin-left: -37.5px;
+    transform: translateX(-50%);
     border-radius: 12px;
     border: 3px solid white;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: all 0.5s ease-in-out;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .card-photo img { width: 100%; height: 100%; object-fit: cover; }
 
-.p1 { transform: rotate(-10deg) translateX(-25px); }
-.p3 { transform: rotate(10deg) translateX(25px); }
-.p2 { z-index: 5; }
+/* Початкові позиції */
+.p1 { transform: translateX(-80%) rotate(-12deg); z-index: 1; }
+.p3 { transform: translateX(-20%) rotate(12deg); z-index: 1; }
+.p2 { transform: translateX(-50%) rotate(0deg); z-index: 5; }
 
-/* Анімація адаптована під меншу ширину */
-.photo-stack:hover .p1 { transform: rotate(-25deg) translateX(-70px); }
-.photo-stack:hover .p3 { transform: rotate(25deg) translateX(70px); }
+/* Анімація розльоту (на мобілках спрацює при тапі) */
+.photo-stack:hover .p1, .photo-stack:active .p1 { 
+    transform: translateX(-160%) rotate(-25deg) scale(1.1); 
+}
+.photo-stack:hover .p3, .photo-stack:active .p3 { 
+    transform: translateX(60%) rotate(25deg) scale(1.1); 
+}
+.photo-stack:hover .p2, .photo-stack:active .p2 { 
+    transform: translateX(-50%) scale(1.15); 
+}
 
-/* Кнопки */
+/* --- КНОПКИ --- */
 .btn-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .btn {
-    padding: 12px;
+    padding: clamp(12px, 3vw, 16px);
     border: none;
-    border-radius: 20px;
+    border-radius: 25px;
     font-weight: 800;
-    font-size: 13px;
+    font-size: clamp(12px, 3vw, 15px);
     color: white;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.btn:active { transform: scale(0.95); }
 .btn-cats { background: linear-gradient(45deg, #6c5ce7, #8e44ad); }
 .btn-surprise { background: linear-gradient(45deg, #ff4d6d, #ff758c); }
 
-/* Котики */
+/* --- КОТИКИ ТА СЮРПРИЗ --- */
 .tap-gif {
     position: absolute;
     pointer-events: none;
@@ -141,16 +148,24 @@ body {
     flex-direction: column-reverse;
     align-items: center;
 }
-/* Котики мають бути маленькими, щоб фон здавався більшим */
-.tap-gif img { width: 55px; border-radius: 8px; }
 
-.cat-bubble {
-    background: white; padding: 3px 8px; border-radius: 10px;
-    font-size: 8px; color: #ff4d6d; border: 1px solid #ff4d6d;
-    white-space: nowrap;
+.tap-gif img { 
+    width: clamp(50px, 15vw, 80px); 
+    border-radius: 10px; 
 }
 
-/* Сюрприз */
+.cat-bubble {
+    background: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: clamp(8px, 2vw, 10px);
+    font-weight: bold;
+    color: var(--primary-pink);
+    border: 1.5px solid var(--primary-pink);
+    white-space: nowrap;
+    margin-bottom: 5px;
+}
+
 .surprise-particle {
     position: fixed;
     z-index: 2000;
@@ -160,6 +175,6 @@ body {
 
 @keyframes blastOut {
     0% { transform: translate(0, 0) scale(0); opacity: 0; }
-    15% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
-    100% { transform: translate(calc(var(--dx) * 1.1), calc(var(--dy) + 300px)) scale(0); opacity: 0; }
+    15% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1.2); }
+    100% { transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) + 500px)) rotate(720deg) scale(0); opacity: 0; }
 }
