@@ -16,66 +16,60 @@ body {
     width: 100vw;
     overflow: hidden;
     position: relative;
-    touch-action: manipulation; /* Покращує відгук на дотик */
+    touch-action: manipulation;
 }
 
-/* --- Адаптивна фонова вісімка --- */
+/* --- Фонова вісімка (збільшена для фону) --- */
 .bg-eight {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 70vmin; 
+    font-size: 90vmin; /* Збільшили, щоб фон був масштабнішим */
     font-weight: 900;
     color: rgba(255, 77, 109, 0.05);
     z-index: -1;
     pointer-events: none;
+    line-height: 1;
 }
 
-/* --- ГОЛОВНА КАРТКА (Адаптивна) --- */
+/* --- ГОЛОВНА КАРТКА --- */
 .main-card {
     background: rgba(255, 255, 255, 0.98);
-    width: 340px; /* Стандарт для ПК */
-    max-width: 90vw; /* Щоб не вилазила на вузьких екранах */
+    width: 340px;
     padding: 25px;
     border-radius: 40px;
     box-shadow: 0 20px 60px rgba(255, 77, 109, 0.25);
     text-align: center;
     position: relative;
     z-index: 1000;
+    transition: transform 0.3s ease; /* Плавне підлаштування */
 }
 
-/* --- АДАПТАЦІЯ ПІД РІЗНІ ТЕЛЕФОНИ --- */
+/* --- ВРУЧНУ ПРОПИСАНІ ПРОПОРЦІЇ ПІД ДІАГОНАЛІ --- */
 
-/* 1. Для дуже маленьких екранів (iPhone SE, старі Android) */
-@media (max-width: 360px) {
+/* Для стандартних смартфонів (iPhone, Samsung) — зменшуємо на 15% */
+@media (max-width: 480px) {
     .main-card {
-        padding: 15px;
-        width: 280px;
+        transform: scale(0.85); /* Зменшуємо всю картку пропорційно */
     }
-    .title { font-size: 20px !important; }
-    .photo-stack { height: 110px; }
-    .card-photo { width: 75px; height: 100px; margin-left: -37px; }
-    #main-text { font-size: 13px; }
-    .btn { padding: 10px; font-size: 12px; }
 }
 
-/* 2. Для середніх екранів (iPhone 13/14/15, Pixel) */
-@media (max-height: 700px) {
+/* Для дуже маленьких або низьких екранів — зменшуємо на 25% */
+@media (max-height: 670px) or (max-width: 360px) {
     .main-card {
-        padding: 15px 20px;
+        transform: scale(0.75); /* Картка стає меншою, фон візуально більшим */
     }
-    .photo-stack { height: 120px; margin: 10px 0; }
-    .card-photo { width: 85px; height: 115px; }
 }
 
-/* 3. Якщо телефон перевернутий (Landscape) */
-@media (max-height: 500px) {
-    .main-card { transform: scale(0.7); }
-    .bg-eight { display: none; }
+/* Для екранів типу iPhone SE або якщо відкрили клавіатуру */
+@media (max-height: 570px) {
+    .main-card {
+        transform: scale(0.65);
+    }
 }
 
-/* --- Решта твоїх стилів без змін --- */
+/* --- Внутрішні елементи (твої оригінальні розміри) --- */
 .eight-dynamic {
     position: relative;
     height: 80px;
@@ -107,7 +101,6 @@ body {
     position: relative;
     height: 140px;
     margin: 15px 0;
-    cursor: pointer;
 }
 
 .card-photo {
@@ -129,9 +122,9 @@ body {
 .p3 { transform: rotate(12deg) translateX(35px); z-index: 1; }
 .p2 { z-index: 5; }
 
-/* Анімація при наведенні або натисканні */
-.photo-stack:hover .p1, .photo-stack:active .p1 { transform: rotate(-25deg) translateX(-90px); }
-.photo-stack:hover .p3, .photo-stack:active .p3 { transform: rotate(25deg) translateX(90px); }
+/* Працює і на ПК (hover), і на телефоні (натискання) */
+.photo-stack:hover .p1, .photo-stack:active .p1 { transform: rotate(-25deg) translateX(-95px); }
+.photo-stack:hover .p3, .photo-stack:active .p3 { transform: rotate(25deg) translateX(95px); }
 
 #main-text {
     font-size: 16px;
@@ -160,7 +153,7 @@ body {
 .btn-cats { background: linear-gradient(45deg, #6c5ce7, #8e44ad); }
 .btn-surprise { background: linear-gradient(45deg, #ff4d6d, #ff758c); }
 
-/* Котики та частинки */
+/* Котики */
 .tap-gif {
     position: absolute;
     pointer-events: none;
@@ -169,7 +162,7 @@ body {
     flex-direction: column-reverse;
     align-items: center;
 }
-.tap-gif img { width: 70px; border-radius: 10px; }
+.tap-gif img { width: 75px; border-radius: 10px; }
 .cat-bubble {
     background: white; padding: 4px 10px; border-radius: 15px;
     font-size: 10px; color: #ff4d6d; border: 1.5px solid #ff4d6d;
