@@ -8,150 +8,155 @@ document.addEventListener("DOMContentLoaded", () => {
         "Красуня! 🌸", "Сяй! ✨", "Будь коханою! ❤️", "Найкраща! 🌷", 
         "Усміхнись! 😊", "Розквітай! 🌺", "Ти — вогонь! 🔥", "Будь щасливою! ✨", 
         "Вражай! 💎", "Справжня! 🌿", "Надихай! 💫", "Ти — космос! 🌌", 
-        "Сяй завжди! 🌟", "Неймовірна! 🦋", "Люби себе! ❤️", "Твори! 🎨", 
-        "Насолоджуйся! 🥂", "Чарівна! 🪄", "Завжди перша! 🥇", "Ти — мрія! ☁️", 
-        "Впевнена! ⚡", "Мила! 🍭", "Лети! 🕊️", "Твій час! ⏳", "Магічна! 🔮"
+        "Неймовірна! 🦋", "Чарівна! 🪄", "Ти — мрія! ☁️", "Впевнена! ⚡"
     ];
 
     const catGifs = [
         "https://media.tenor.com/5AsqpbIECbcAAAAi/peach-peach-and-goma.gif",
         "https://media.tenor.com/kkxWF2DrTRIAAAAi/cat-meme-elgatitolover.gif",
         "https://media.tenor.com/Gp2PDF56kYcAAAAj/capoo-cat.gif",
-        "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDNpaDhnejExbHU5cmN2YmFrMjZhbjV5Nm9kdmNtamNiNHQ4aXNsZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6C5LFuLcnhTZeypW0E/giphy.gif",
-        "https://media1.tenor.com/m/monlh3grRNgAAAAd/just-for-you-cat.gif",
-        "https://media.tenor.com/WqQaOh9pH90AAAAj/sylus-kitty-sylus.gif"
+        "https://media1.tenor.com/m/monlh3grRNgAAAAd/just-for-you-cat.gif"
     ];
 
     let activeCats = [];
 
-    // Малюємо вісімку
+    // --- 1. ПРАВИЛЬНА ГЕОМЕТРІЯ ВІСІМКИ (ВІДСОТКОВА) ---
     function createEight() {
-        const drawCircle = (centerX, centerY, radius, count) => {
+        if (!eightContainer) return;
+        eightContainer.innerHTML = ''; // Очистка перед малюванням
+
+        const drawCircle = (centerX, centerY, radiusX, radiusY, count) => {
             for (let i = 0; i < count; i++) {
                 const angle = (i / count) * (Math.PI * 2);
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
+                // Використовуємо % для адаптивності всередині контейнера
+                const x = centerX + radiusX * Math.cos(angle);
+                const y = centerY + radiusY * Math.sin(angle);
+                
                 const heart = document.createElement('span');
                 heart.className = 'heart-dot';
                 heart.innerHTML = '❤️';
-                heart.style.left = x + 'px';
-                heart.style.top = y + 'px';
+                heart.style.left = `${x}%`;
+                heart.style.top = `${y}%`;
                 eightContainer.appendChild(heart);
             }
         };
-        drawCircle(30, 20, 18, 12);
-        drawCircle(30, 65, 24, 15);
+
+        // Малюємо два кола вісімки (відсотки від ширини/висоти контейнера)
+        drawCircle(50, 25, 35, 20, 12); // Верхнє коло
+        drawCircle(50, 70, 45, 25, 15); // Нижнє коло
     }
     createEight();
 
-    // Функція пошуку безпечних координат
+    // --- 2. БЕЗПЕЧНІ КООРДИНАТИ ДЛЯ КОТІВ ---
     function getSafeCoords() {
         const cardRect = mainCard.getBoundingClientRect();
-        const padding = 100; // Відступ від основної картки
-        const catSize = 140; // Відстань між котами
+        const padding = 20; // Невеликий зазор від країв екрана
         let attempts = 0;
 
-        while (attempts < 50) {
-            const rx = Math.random() * (window.innerWidth - 120) + 60;
-            const ry = Math.random() * (window.innerHeight - 150) + 75;
+        while (attempts < 30) {
+            const rx = Math.random() * (window.innerWidth - 100) + 50;
+            const ry = Math.random() * (window.innerHeight - 100) + 50;
 
-            // 1. Перевірка на перекриття з центральною карткою
-            const hitsCard = (rx > cardRect.left - padding && rx < cardRect.right + padding && 
-                             ry > cardRect.top - padding && ry < cardRect.bottom + padding);
-            
-            // 2. Перевірка на перекриття з іншими активними котами
-            const hitsOtherCat = activeCats.some(pos => Math.hypot(pos.x - rx, pos.y - ry) < catSize);
+            // Перевірка, щоб коти не з'являлися ПІД карткою
+            const hitsCard = (
+                rx > cardRect.left - 50 && rx < cardRect.right + 50 && 
+                ry > cardRect.top - 50 && ry < cardRect.bottom + 50
+            );
 
-            if (!hitsCard && !hitsOtherCat) {
-                return { x: rx, y: ry };
-            }
+            if (!hitsCard) return { x: rx, y: ry };
             attempts++;
         }
-        return null; // Якщо місце не знайдено
+        return { x: Math.random() * 50, y: Math.random() * 50 }; // Дефолт
     }
 
+    // --- 3. СПАВН КОТІВ ---
     function spawnCat(x, y, isAuto = false) {
-        let coords;
+        const coords = isAuto ? getSafeCoords() : { x, y };
         
-        if (isAuto) {
-            coords = getSafeCoords();
-        } else {
-            // Для кліку перевіряємо чи точка не на картці
+        // Заборона спавнити кота прямо на картку при кліку
+        if (!isAuto) {
             const cardRect = mainCard.getBoundingClientRect();
-            const padding = 60;
-            if (x > cardRect.left - padding && x < cardRect.right + padding && 
-                y > cardRect.top - padding && y < cardRect.bottom + padding) return;
-            
-            // Перевіряємо чи не на іншому коті
-            if (activeCats.some(pos => Math.hypot(pos.x - x, pos.y - y) < 130)) return;
-            coords = { x, y };
+            if (x > cardRect.left && x < cardRect.right && y > cardRect.top && y < cardRect.bottom) return;
         }
-
-        if (!coords) return;
 
         const container = document.createElement('div');
         container.className = 'tap-gif';
         
-        const safeX = Math.max(10, Math.min(coords.x - 50, window.innerWidth - 110));
-        const safeY = Math.max(10, Math.min(coords.y - 50, window.innerHeight - 150));
-        
-        container.style.left = safeX + 'px';
-        container.style.top = safeY + 'px';
-        
-        const pos = { x: safeX, y: safeY };
-        activeCats.push(pos);
+        // Центрування гіфки відносно точки кліку
+        container.style.left = (coords.x - 40) + 'px';
+        container.style.top = (coords.y - 40) + 'px';
 
         container.innerHTML = `
-            <img src="${catGifs[Math.floor(Math.random() * catGifs.length)]}">
+            <img src="${catGifs[Math.floor(Math.random() * catGifs.length)]}" alt="cat">
             <div class="cat-bubble">${greetings[Math.floor(Math.random() * greetings.length)]}</div>
         `;
         
         document.body.appendChild(container);
 
+        // Плавне зникнення
         setTimeout(() => {
-            container.classList.add('fade-out'); // Можна додати в CSS для плавного зникнення
-            setTimeout(() => {
-                container.remove();
-                activeCats = activeCats.filter(p => p !== pos);
-            }, 500);
+            container.style.opacity = '0';
+            container.style.transition = 'opacity 0.5s';
+            setTimeout(() => container.remove(), 500);
         }, 3000);
     }
 
-    document.addEventListener('mousedown', (e) => {
-        if (e.target === body || e.target.classList.contains('bg-eight')) spawnCat(e.pageX, e.pageY);
-    });
+    // --- 4. ОБРОБКА КЛІКІВ ТА ТАПІВ ---
+    const handleAction = (e) => {
+        // Якщо клікнули по фону або по цифрі 8
+        if (e.target === body || e.target.classList.contains('bg-eight')) {
+            const posX = e.pageX || (e.touches ? e.touches[0].pageX : 0);
+            const posY = e.pageY || (e.touches ? e.touches[0].pageY : 0);
+            spawnCat(posX, posY);
+        }
+    };
 
-    document.getElementById('surpriseBtn').addEventListener('click', () => {
-        const icons = ['❤️', '🌸', '✨', '🎁', '🌷', '🦋', '💐', '💖', '⭐', '🎈', '🍭', '🌈', '💎', '🌹'];
-        body.style.background = '#ffdce5';
-        setTimeout(() => body.style.background = '#fff0f3', 800);
+    document.addEventListener('mousedown', handleAction);
+    document.addEventListener('touchstart', handleAction, { passive: true });
 
-        // Кото-вибух без накладання
-        for (let k = 0; k < 16; k++) {
-            setTimeout(() => spawnCat(0, 0, true), k * 100);
+    // --- 5. КНОПКА "СЮРПРИЗ" (КОНФЕТТІ + КОТО-ДЕСАНТ) ---
+    document.getElementById('surpriseBtn').addEventListener('click', (e) => {
+        const icons = ['❤️', '🌸', '✨', '🎁', '🌷', '🦋', '💐', '💖'];
+        
+        // Ефект спалаху фону
+        body.style.backgroundColor = '#ffdce5';
+        setTimeout(() => body.style.backgroundColor = '#fff0f3', 500);
+
+        // Масовий запуск котів
+        for (let k = 0; k < 12; k++) {
+            setTimeout(() => spawnCat(0, 0, true), k * 150);
         }
 
-        // Конфетті по всьому екрану
-        for (let i = 0; i < 250; i++) {
-            setTimeout(() => {
-                const particle = document.createElement('div');
-                particle.className = 'surprise-particle';
-                particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
-                particle.style.left = Math.random() * window.innerWidth + 'px';
-                particle.style.top = Math.random() * window.innerHeight + 'px';
-                particle.style.setProperty('--dx', (Math.random() - 0.5) * 800 + 'px');
-                particle.style.setProperty('--dy', (Math.random() - 0.5) * 800 + 'px');
-                particle.style.fontSize = (Math.random() * 25 + 15) + 'px';
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 3000);
-            }, i * 8);
+        // Вибух конфетті
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'surprise-particle';
+            particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+            
+            // Початкова точка - кнопка
+            particle.style.left = e.pageX + 'px';
+            particle.style.top = e.pageY + 'px';
+            
+            // Напрямок розльоту
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 400 + 100;
+            particle.style.setProperty('--dx', Math.cos(angle) * velocity + 'px');
+            particle.style.setProperty('--dy', Math.sin(angle) * velocity + 'px');
+            
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 3000);
         }
+
         mainText.innerText = "Ти заслуговуєш на всю магію світу! ✨🐱";
     });
 
+    // --- 6. КНОПКА "КОТО-ДЕСАНТ" ---
     document.getElementById('giftBtn').addEventListener('click', () => {
-        for (let i = 0; i < 12; i++) {
-            setTimeout(() => spawnCat(0, 0, true), i * 200);
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => spawnCat(0, 0, true), i * 300);
         }
     });
+
+    // Оновлюємо вісімку при зміні розміру вікна (наприклад, поворот телефону)
+    window.addEventListener('resize', createEight);
 });
