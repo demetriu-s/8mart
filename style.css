@@ -11,6 +11,8 @@ body {
     width: 100vw;
     overflow: hidden;
     position: relative;
+    /* Вимикаємо зайві відступи для мобілок */
+    touch-action: manipulation;
 }
 
 /* --- Фонова декоративна цифра 8 --- */
@@ -19,20 +21,24 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 60vh; 
+    /* Використовуємо vmin, щоб вона не розтягувалась по ширині */
+    font-size: 70vmin; 
     font-weight: 900;
     color: rgba(255, 77, 109, 0.03);
     z-index: -1;
     pointer-events: none;
+    line-height: 1;
 }
 
 /* --- ГЕОМЕТРИЧНА ВІСІМКА (ФІКСОВАНА ФОРМА) --- */
 .eight-dynamic {
     position: relative;
-    height: 90px; /* Фіксована висота */
-    width: 60px;  /* Фіксована ширина */
+    height: 90px;
+    width: 60px;
     margin: 0 auto 10px;
-    display: block; /* Гарантуємо, що це блок */
+    display: block;
+    /* Центруємо елементи всередині */
+    transform-origin: center;
 }
 
 .heart-dot {
@@ -40,21 +46,21 @@ body {
     font-size: 10px;
     color: #ff4d6d;
     line-height: 1;
-    transform-origin: center;
+    /* Гарантуємо, що сердечка не "пливуть" */
+    display: inline-block;
     animation: heartPulse 1.5s infinite alternate;
 }
 
 @keyframes heartPulse {
     from { opacity: 0.6; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1.2); }
+    to { opacity: 1; transform: scale(1.1); }
 }
 
-/* --- ГОЛОВНА КАРТКА (СТАБІЛЬНА НА ТЕЛЕФОНІ) --- */
+/* --- ГОЛОВНА КАРТКА (ОПТИМІЗАЦІЯ ПІД МОБІЛКУ) --- */
 .main-card {
     background: rgba(255, 255, 255, 0.98);
-    /* На телефонах вона займатиме лише 70% ширини, залишаючи багато місця для котів */
-    width: 260px; 
-    max-width: 80vw; 
+    /* Використовуємо min(), щоб на дуже вузьких екранах вона ставала ще меншою */
+    width: min(260px, 75vw); 
     padding: 20px;
     border-radius: 35px;
     box-shadow: 0 15px 50px rgba(255, 77, 109, 0.2);
@@ -67,7 +73,8 @@ body {
 
 .title {
     font-family: 'Caveat', cursive;
-    font-size: 22px;
+    /* Шрифт теж має трохи зменшуватись */
+    font-size: clamp(18px, 5vw, 22px);
     color: #ff4d6d;
     margin: 0;
     line-height: 1.1;
@@ -76,17 +83,18 @@ body {
 /* --- Фото-стек --- */
 .photo-stack {
     position: relative;
-    height: 120px;
+    /* Зменшуємо висоту для компактності */
+    height: 110px;
     margin: 15px 0;
     cursor: pointer;
 }
 
 .card-photo {
     position: absolute;
-    width: 80px; 
-    height: 110px;
+    width: 75px; 
+    height: 100px;
     left: 50%;
-    margin-left: -40px;
+    margin-left: -37.5px;
     border-radius: 12px;
     border: 3px solid white;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -99,9 +107,9 @@ body {
 .p3 { transform: rotate(10deg) translateX(25px); }
 .p2 { z-index: 5; }
 
-/* Анімація при кліку/ховері */
-.photo-stack:hover .p1 { transform: rotate(-25deg) translateX(-80px); }
-.photo-stack:hover .p3 { transform: rotate(25deg) translateX(80px); }
+/* Анімація адаптована під меншу ширину */
+.photo-stack:hover .p1 { transform: rotate(-25deg) translateX(-70px); }
+.photo-stack:hover .p3 { transform: rotate(25deg) translateX(70px); }
 
 /* Кнопки */
 .btn-group {
@@ -118,6 +126,7 @@ body {
     font-size: 13px;
     color: white;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-cats { background: linear-gradient(45deg, #6c5ce7, #8e44ad); }
@@ -132,10 +141,12 @@ body {
     flex-direction: column-reverse;
     align-items: center;
 }
-.tap-gif img { width: 65px; border-radius: 10px; }
+/* Котики мають бути маленькими, щоб фон здавався більшим */
+.tap-gif img { width: 55px; border-radius: 8px; }
+
 .cat-bubble {
     background: white; padding: 3px 8px; border-radius: 10px;
-    font-size: 9px; color: #ff4d6d; border: 1px solid #ff4d6d;
+    font-size: 8px; color: #ff4d6d; border: 1px solid #ff4d6d;
     white-space: nowrap;
 }
 
@@ -150,5 +161,5 @@ body {
 @keyframes blastOut {
     0% { transform: translate(0, 0) scale(0); opacity: 0; }
     15% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1); }
-    100% { transform: translate(calc(var(--dx) * 1.2), calc(var(--dy) + 400px)) scale(0); opacity: 0; }
+    100% { transform: translate(calc(var(--dx) * 1.1), calc(var(--dy) + 300px)) scale(0); opacity: 0; }
 }
