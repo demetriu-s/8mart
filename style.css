@@ -1,157 +1,168 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const mainText = document.getElementById('main-text');
-    const mainCard = document.getElementById('mainCard');
-    const eightContainer = document.getElementById('heart-eight-container');
-    const body = document.getElementById('body');
+/* --- Загальні налаштування --- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: #fff0f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative;
+}
 
-    const greetings = [
-        "Красуня! 🌸", "Сяй! ✨", "Будь коханою! ❤️", "Найкраща! 🌷", 
-        "Усміхнись! 😊", "Розквітай! 🌺", "Ти — вогонь! 🔥", "Будь щасливою! ✨", 
-        "Вражай! 💎", "Справжня! 🌿", "Надихай! 💫", "Ти — космос! 🌌", 
-        "Сяй завжди! 🌟", "Неймовірна! 🦋", "Люби себе! ❤️", "Твори! 🎨", 
-        "Насолоджуйся! 🥂", "Чарівна! 🪄", "Завжди перша! 🥇", "Ти — мрія! ☁️", 
-        "Впевнена! ⚡", "Мила! 🍭", "Лети! 🕊️", "Твій час! ⏳", "Магічна! 🔮"
-    ];
+/* --- Фонова вісімка --- */
+.bg-eight {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80vh;
+    font-weight: 900;
+    color: rgba(255, 77, 109, 0.05);
+    z-index: -1;
+    pointer-events: none;
+}
 
-    const catGifs = [
-        "https://media.tenor.com/5AsqpbIECbcAAAAi/peach-peach-and-goma.gif",
-        "https://media.tenor.com/kkxWF2DrTRIAAAAi/cat-meme-elgatitolover.gif",
-        "https://media.tenor.com/Gp2PDF56kYcAAAAj/capoo-cat.gif",
-        "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDNpaDhnejExbHU5cmN2YmFrMjZhbjV5Nm9kdmNtamNiNHQ4aXNsZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6C5LFuLcnhTZeypW0E/giphy.gif",
-        "https://media1.tenor.com/m/monlh3grRNgAAAAd/just-for-you-cat.gif",
-        "https://media.tenor.com/WqQaOh9pH90AAAAj/sylus-kitty-sylus.gif"
-    ];
+/* --- Головна картка (БЕЗ ZOOM/SCALE) --- */
+.main-card {
+    background: rgba(255, 255, 255, 0.98);
+    /* Картка буде займати 90% ширини на мобілках, але не більше 320px */
+    width: clamp(260px, 90%, 320px); 
+    padding: clamp(15px, 5vw, 25px);
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(255, 77, 109, 0.25);
+    text-align: center;
+    position: relative;
+    z-index: 1000;
+    box-sizing: border-box;
+}
 
-    let activeCats = [];
+/* --- Внутрішні елементи тепер адаптуються через розміри, а не через зум --- */
+.eight-dynamic {
+    position: relative;
+    height: 80px;
+    width: 60px;
+    margin: 0 auto 10px;
+}
 
-    // Малюємо вісімку
-    function createEight() {
-        const drawCircle = (centerX, centerY, radius, count) => {
-            for (let i = 0; i < count; i++) {
-                const angle = (i / count) * (Math.PI * 2);
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-                const heart = document.createElement('span');
-                heart.className = 'heart-dot';
-                heart.innerHTML = '❤️';
-                heart.style.left = x + 'px';
-                heart.style.top = y + 'px';
-                eightContainer.appendChild(heart);
-            }
-        };
-        drawCircle(30, 20, 18, 12);
-        drawCircle(30, 65, 24, 15);
+.heart-dot {
+    position: absolute;
+    font-size: 10px;
+    color: #ff4d6d;
+    animation: heartPulse 1.5s infinite alternate;
+}
+
+@keyframes heartPulse {
+    from { opacity: 0.5; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1.2); }
+}
+
+.title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(22px, 6vw, 28px);
+    color: #ff4d6d;
+    margin: 0;
+}
+
+.photo-stack {
+    position: relative;
+    height: 140px;
+    margin: 15px 0;
+    cursor: pointer;
+}
+
+.card-photo {
+    position: absolute;
+    width: clamp(80px, 25vw, 100px);
+    height: clamp(110px, 35vw, 135px);
+    left: 50%;
+    margin-left: clamp(-50px, -12vw, -40px);
+    border-radius: 15px;
+    border: 4px solid white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Фото в стеку */
+.p1 { transform: rotate(-12deg) translateX(-35px); z-index: 1; }
+.p3 { transform: rotate(12deg) translateX(35px); z-index: 1; }
+.p2 { z-index: 5; }
+
+.photo-stack:hover .p1 { transform: rotate(-25deg) translateX(-100px); }
+.photo-stack:hover .p3 { transform: rotate(25deg) translateX(100px); }
+
+/* Текст та кнопки */
+#main-text {
+    font-size: clamp(14px, 4vw, 16px);
+    color: #444;
+    margin: 10px 0;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-cats { background: linear-gradient(45deg, #6c5ce7, #8e44ad); }
+.btn-surprise { background: linear-gradient(45deg, #ff4d6d, #ff758c); }
+
+/* --- ЧИСТА АНІМАЦІЯ СЮРПРИЗУ --- */
+.surprise-particle {
+    position: fixed;
+    z-index: 2000;
+    pointer-events: none;
+    /* Використовуємо простіший і надійніший метод анімації */
+    animation: blastOut 3s ease-out forwards;
+}
+
+@keyframes blastOut {
+    0% { 
+        transform: translate(0, 0) rotate(0deg) scale(0); 
+        opacity: 0; 
     }
-    createEight();
-
-    // Функція пошуку безпечних координат
-    function getSafeCoords() {
-        const cardRect = mainCard.getBoundingClientRect();
-        const padding = 100; // Відступ від основної картки
-        const catSize = 140; // Відстань між котами
-        let attempts = 0;
-
-        while (attempts < 50) {
-            const rx = Math.random() * (window.innerWidth - 120) + 60;
-            const ry = Math.random() * (window.innerHeight - 150) + 75;
-
-            // 1. Перевірка на перекриття з центральною карткою
-            const hitsCard = (rx > cardRect.left - padding && rx < cardRect.right + padding && 
-                             ry > cardRect.top - padding && ry < cardRect.bottom + padding);
-            
-            // 2. Перевірка на перекриття з іншими активними котами
-            const hitsOtherCat = activeCats.some(pos => Math.hypot(pos.x - rx, pos.y - ry) < catSize);
-
-            if (!hitsCard && !hitsOtherCat) {
-                return { x: rx, y: ry };
-            }
-            attempts++;
-        }
-        return null; // Якщо місце не знайдено
+    10% { 
+        opacity: 1; 
+        transform: translate(var(--dx), var(--dy)) rotate(180deg) scale(1.2); 
     }
-
-    function spawnCat(x, y, isAuto = false) {
-        let coords;
-        
-        if (isAuto) {
-            coords = getSafeCoords();
-        } else {
-            // Для кліку перевіряємо чи точка не на картці
-            const cardRect = mainCard.getBoundingClientRect();
-            const padding = 60;
-            if (x > cardRect.left - padding && x < cardRect.right + padding && 
-                y > cardRect.top - padding && y < cardRect.bottom + padding) return;
-            
-            // Перевіряємо чи не на іншому коті
-            if (activeCats.some(pos => Math.hypot(pos.x - x, pos.y - y) < 130)) return;
-            coords = { x, y };
-        }
-
-        if (!coords) return;
-
-        const container = document.createElement('div');
-        container.className = 'tap-gif';
-        
-        const safeX = Math.max(10, Math.min(coords.x - 50, window.innerWidth - 110));
-        const safeY = Math.max(10, Math.min(coords.y - 50, window.innerHeight - 150));
-        
-        container.style.left = safeX + 'px';
-        container.style.top = safeY + 'px';
-        
-        const pos = { x: safeX, y: safeY };
-        activeCats.push(pos);
-
-        container.innerHTML = `
-            <img src="${catGifs[Math.floor(Math.random() * catGifs.length)]}">
-            <div class="cat-bubble">${greetings[Math.floor(Math.random() * greetings.length)]}</div>
-        `;
-        
-        document.body.appendChild(container);
-
-        setTimeout(() => {
-            container.classList.add('fade-out'); // Можна додати в CSS для плавного зникнення
-            setTimeout(() => {
-                container.remove();
-                activeCats = activeCats.filter(p => p !== pos);
-            }, 500);
-        }, 3000);
+    100% { 
+        transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) + 500px)) rotate(720deg) scale(0); 
+        opacity: 0; 
     }
+}
 
-    document.addEventListener('mousedown', (e) => {
-        if (e.target === body || e.target.classList.contains('bg-eight')) spawnCat(e.pageX, e.pageY);
-    });
-
-    document.getElementById('surpriseBtn').addEventListener('click', () => {
-        const icons = ['❤️', '🌸', '✨', '🎁', '🌷', '🦋', '💐', '💖', '⭐', '🎈', '🍭', '🌈', '💎', '🌹'];
-        body.style.background = '#ffdce5';
-        setTimeout(() => body.style.background = '#fff0f3', 800);
-
-        // Кото-вибух без накладання
-        for (let k = 0; k < 16; k++) {
-            setTimeout(() => spawnCat(0, 0, true), k * 100);
-        }
-
-        // Конфетті по всьому екрану
-        for (let i = 0; i < 250; i++) {
-            setTimeout(() => {
-                const particle = document.createElement('div');
-                particle.className = 'surprise-particle';
-                particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
-                particle.style.left = Math.random() * window.innerWidth + 'px';
-                particle.style.top = Math.random() * window.innerHeight + 'px';
-                particle.style.setProperty('--dx', (Math.random() - 0.5) * 800 + 'px');
-                particle.style.setProperty('--dy', (Math.random() - 0.5) * 800 + 'px');
-                particle.style.fontSize = (Math.random() * 25 + 15) + 'px';
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 3000);
-            }, i * 8);
-        }
-        mainText.innerText = "Ти заслуговуєш на всю магію світу! ✨🐱";
-    });
-
-    document.getElementById('giftBtn').addEventListener('click', () => {
-        for (let i = 0; i < 12; i++) {
-            setTimeout(() => spawnCat(0, 0, true), i * 200);
-        }
-    });
-});
+/* Котики */
+.tap-gif {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+.tap-gif img { width: 80px; border-radius: 10px; }
+.cat-bubble {
+    background: white; padding: 4px 10px; border-radius: 15px;
+    font-size: 10px; color: #ff4d6d; border: 1.5px solid #ff4d6d;
+}
