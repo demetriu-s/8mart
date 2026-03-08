@@ -44,22 +44,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     createEight();
 
-    function getSafeCoords() {
-        const cardRect = mainCard.getBoundingClientRect();
-        const padding = 100;
-        const catSize = 140;
-        let attempts = 0;
-        while (attempts < 50) {
-            const rx = Math.random() * (window.innerWidth - 120) + 60;
-            const ry = Math.random() * (window.innerHeight - 150) + 75;
-            const hitsCard = (rx > cardRect.left - padding && rx < cardRect.right + padding && 
-                             ry > cardRect.top - padding && ry < cardRect.bottom + padding);
-            const hitsOtherCat = activeCats.some(pos => Math.hypot(pos.x - rx, pos.y - ry) < catSize);
-            if (!hitsCard && !hitsOtherCat) return { x: rx, y: ry };
-            attempts++;
+ function getSafeCoords() {
+    const cardRect = mainCard.getBoundingClientRect();
+    const padding = 20; // Зменшили відступ, щоб коти могли бути ближче до картки
+    let attempts = 0;
+
+    while (attempts < 50) {
+        // Генеруємо по всьому екрану
+        const rx = Math.random() * (window.innerWidth - 80) + 40;
+        const ry = Math.random() * (window.innerHeight - 100) + 50;
+
+        // Перевірка: чи не потрапляє точка ВНУТРІШ картки
+        const hitsCard = (rx > cardRect.left - padding && rx < cardRect.right + padding && 
+                         ry > cardRect.top - padding && ry < cardRect.bottom + padding);
+
+        if (!hitsCard) {
+            return { x: rx, y: ry };
         }
-        return null;
+        attempts++;
     }
+    // Якщо не знайшли місце, спавнимо просто у випадковому верхньому куті
+    return { x: Math.random() * 100, y: Math.random() * 200 };
+}
 
     function spawnCat(x, y, isAuto = false) {
         let coords;
@@ -139,3 +145,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
