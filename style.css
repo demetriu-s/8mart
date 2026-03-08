@@ -13,113 +13,95 @@ body {
     position: relative;
 }
 
-/* --- Фонова вісімка --- */
+/* --- Фонова вісімка (зробив ще прозорішою) --- */
 .bg-eight {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 80vh;
+    font-size: 70vh; 
     font-weight: 900;
-    color: rgba(255, 77, 109, 0.05);
+    color: rgba(255, 77, 109, 0.03);
     z-index: -1;
     pointer-events: none;
 }
 
-/* --- Головна картка (БЕЗ ZOOM/SCALE) --- */
+/* --- ГОЛОВНА КАРТКА (СТАБІЛІЗАЦІЯ) --- */
 .main-card {
     background: rgba(255, 255, 255, 0.98);
-    /* Картка буде займати 90% ширини на мобілках, але не більше 320px */
-    width: clamp(260px, 90%, 320px); 
-    padding: clamp(15px, 5vw, 25px);
-    border-radius: 40px;
-    box-shadow: 0 20px 60px rgba(255, 77, 109, 0.25);
+    /* На ПК буде 320px, на телефонах — максимум 75% ширини екрана */
+    width: 75%; 
+    max-width: 320px;
+    min-width: 240px; 
+    padding: 20px;
+    border-radius: 35px;
+    box-shadow: 0 15px 50px rgba(255, 77, 109, 0.2);
     text-align: center;
     position: relative;
     z-index: 1000;
     box-sizing: border-box;
+    /* Гарантуємо, що картка не розшириться від контенту */
 }
 
-/* --- Внутрішні елементи тепер адаптуються через розміри, а не через зум --- */
+/* --- Внутрішні елементи (масштабуються під картку) --- */
 .eight-dynamic {
     position: relative;
-    height: 80px;
-    width: 60px;
+    height: 70px;
+    width: 50px;
     margin: 0 auto 10px;
-}
-
-.heart-dot {
-    position: absolute;
-    font-size: 10px;
-    color: #ff4d6d;
-    animation: heartPulse 1.5s infinite alternate;
-}
-
-@keyframes heartPulse {
-    from { opacity: 0.5; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1.2); }
 }
 
 .title {
     font-family: 'Caveat', cursive;
-    font-size: clamp(22px, 6vw, 28px);
+    font-size: clamp(20px, 5vw, 26px); /* Гнучкий шрифт */
     color: #ff4d6d;
     margin: 0;
+    line-height: 1.1;
 }
 
 .photo-stack {
     position: relative;
-    height: 140px;
+    height: 130px;
     margin: 15px 0;
     cursor: pointer;
 }
 
 .card-photo {
     position: absolute;
-    width: clamp(80px, 25vw, 100px);
-    height: clamp(110px, 35vw, 135px);
+    width: 85px; 
+    height: 115px;
     left: 50%;
-    margin-left: clamp(-50px, -12vw, -40px);
-    border-radius: 15px;
-    border: 4px solid white;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    overflow: hidden;
+    margin-left: -42px;
+    border-radius: 12px;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.card-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.card-photo img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Фото в стеку */
-.p1 { transform: rotate(-12deg) translateX(-35px); z-index: 1; }
-.p3 { transform: rotate(12deg) translateX(35px); z-index: 1; }
+/* Позиції фото */
+.p1 { transform: rotate(-10deg) translateX(-25px); }
+.p3 { transform: rotate(10deg) translateX(25px); }
 .p2 { z-index: 5; }
 
-.photo-stack:hover .p1 { transform: rotate(-25deg) translateX(-100px); }
-.photo-stack:hover .p3 { transform: rotate(25deg) translateX(100px); }
+/* Анімація фото при ховері/тапі */
+.photo-stack:hover .p1 { transform: rotate(-25deg) translateX(-90px); }
+.photo-stack:hover .p3 { transform: rotate(25deg) translateX(90px); }
 
-/* Текст та кнопки */
-#main-text {
-    font-size: clamp(14px, 4vw, 16px);
-    color: #444;
-    margin: 10px 0;
-}
-
+/* Кнопки */
 .btn-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .btn {
     padding: 12px;
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     font-weight: 800;
-    font-size: 14px;
+    font-size: 13px;
     color: white;
     cursor: pointer;
     transition: 0.3s;
@@ -128,31 +110,7 @@ body {
 .btn-cats { background: linear-gradient(45deg, #6c5ce7, #8e44ad); }
 .btn-surprise { background: linear-gradient(45deg, #ff4d6d, #ff758c); }
 
-/* --- ЧИСТА АНІМАЦІЯ СЮРПРИЗУ --- */
-.surprise-particle {
-    position: fixed;
-    z-index: 2000;
-    pointer-events: none;
-    /* Використовуємо простіший і надійніший метод анімації */
-    animation: blastOut 3s ease-out forwards;
-}
-
-@keyframes blastOut {
-    0% { 
-        transform: translate(0, 0) rotate(0deg) scale(0); 
-        opacity: 0; 
-    }
-    10% { 
-        opacity: 1; 
-        transform: translate(var(--dx), var(--dy)) rotate(180deg) scale(1.2); 
-    }
-    100% { 
-        transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) + 500px)) rotate(720deg) scale(0); 
-        opacity: 0; 
-    }
-}
-
-/* Котики */
+/* --- Котики та бульбашки --- */
 .tap-gif {
     position: absolute;
     pointer-events: none;
@@ -161,8 +119,35 @@ body {
     flex-direction: column-reverse;
     align-items: center;
 }
-.tap-gif img { width: 80px; border-radius: 10px; }
-.cat-bubble {
-    background: white; padding: 4px 10px; border-radius: 15px;
-    font-size: 10px; color: #ff4d6d; border: 1.5px solid #ff4d6d;
+
+.tap-gif img { 
+    width: 70px; /* Зменшили котів, щоб вони здавалися далі від картки */
+    border-radius: 10px; 
 }
+
+.cat-bubble {
+    background: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #ff4d6d;
+    border: 1.5px solid #ff4d6d;
+    white-space: nowrap;
+}
+
+/* Сюрприз частки */
+.surprise-particle {
+    position: fixed;
+    z-index: 2000;
+    pointer-events: none;
+    animation: blastOut 3s ease-out forwards;
+}
+
+@keyframes blastOut {
+    0% { transform: translate(0, 0) scale(0); opacity: 0; }
+    15% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1.1); }
+    100% { transform: translate(calc(var(--dx) * 1.3), calc(var(--dy) + 450px)) scale(0); opacity: 0; }
+}
+
+.fade-out { opacity: 0; transition: opacity 0.5s; }
